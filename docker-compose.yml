@@ -1,0 +1,69 @@
+# docker/docker-compose.yml
+#
+# Kafka SEUL, image OFFICIELLE Apache Kafka (apache/kafka), mode KRaft
+# (pas de Zookeeper). Aucune base de donnees -- le projet n'utilise
+# aucune persistance (choix de conception explicite).
+#
+# NOTE IMPORTANTE : ce fichier utilisait a l'origine bitnami/kafka,
+# mais Bitnami a change sa politique de distribution -- les images
+# versionnees (ex. bitnami/kafka:3.7) sont desormais reservees aux
+# clients payants ("Bitnami Secure Images"). apache/kafka est
+# l'image OFFICIELLE publiee par le projet Apache Kafka lui-meme
+# depuis la version 3.7, gratuite et independante de ce changement.
+
+services:
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: globatrend-kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: source/backend/Dockerfile
+    container_name: globatrend-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+
+  frontend:
+    build:
+      context: .
+      dockerfile: source/frontend/Dockerfile
+    container_name: globatrend-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      # Used by browser-side code (forms, live chart) -- must stay a
+      # URL reachable from the VIEWER'S machine, never "backend:8000".
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+      # Used by server-rendered code (the /models page) running
+      # inside this container -- reaches the backend over the
+      # Docker network.
+      - API_BASE_URL_INTERNAL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  kafka_data:
