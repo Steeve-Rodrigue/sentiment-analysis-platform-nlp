@@ -1,55 +1,76 @@
-[project]
-name = "sentiment-analysis-platform"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-    "accelerate>=1.1.0",
-    "catboost>=1.2.10",
-    "datasets>=5.0.1",
-    "emoji>=2.15.0",
-    "gensim>=4.4.0",
-    "langdetect>=1.0.9",
-    "lightgbm>=4.7.0",
-    "matplotlib>=3.11.1",
-    "nltk>=3.10.0",
-    "numba>=0.60",
-    "numpy>=2.4.6",
-    "pypdf>=6.15.0",
-    "pyspellchecker>=0.9.0",
-    "scikit-learn>=1.9.0",
-    "sentence-transformers>=5.6.1",
-    "sentencepiece>=0.2.2",
-    "shap>=0.49.1",
-    "spacy>=3.8.14",
-    "tokenizers>=0.22.2",
-    "torch>=2.13.0",
-    "transformers[torch]>=5.14.1",
-    "xgboost>=3.2.0",
-]
+    [project]
+    name = "sentiment-analysis-platform"
+    version = "0.1.0"
+    description = "Add your description here"
+    readme = "README.md"
+    requires-python = ">=3.11"
+    dependencies = [
+        "datasets>=5.0.1",
+        "fastapi>=0.141.1",
+        "kafka-python>=3.0.11",
+        "nltk>=3.10.0",
+        "numpy>=2.4.6",
+        "pydantic-settings>=2.15.0",
+        "scikit-learn>=1.9.0",
+        "torch>=2.13.0",
+        "transformers[torch]>=5.14.1",
+        "uvicorn[standard]>=0.52.4",
+    ]
 
-[dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-    "pre-commit>=4.0.0",
-    "ruff>=0.8.0",
-    "jupyter>=1.1.1",
-    "ipywidgets>=8.1.9",
-]
+    [project.optional-dependencies]
+    ml-phases = [
+        "accelerate>=1.1.0",
+        "catboost>=1.2.10",
+        "emoji>=2.15.0",
+        "gensim>=4.4.0",
+        "langdetect>=1.0.9",
+        "lightgbm>=4.7.0",
+        "matplotlib>=3.11.1",
+        "numba>=0.60",
+        "pypdf>=6.15.0",
+        "pyspellchecker>=0.9.0",
+        "sentence-transformers>=5.6.1",
+        "sentencepiece>=0.2.2",
+        "shap>=0.49.1",
+        "spacy>=3.8.14",
+        "tokenizers>=0.22.2",
+        "xgboost>=3.2.0",
+    ]
 
-[tool.ruff]
-line-length = 88
-target-version = "py311"
-extend-exclude = []
+    [dependency-groups]
+    dev = [
+        "pytest>=9.1.1",
+        "pre-commit>=4.0.0",
+        "ruff>=0.8.0",
+        "jupyter>=1.1.1",
+        "ipywidgets>=8.1.9",
+    ]
 
-[tool.ruff.lint]
-select = ["E", "F", "I"]
+    [tool.ruff]
+    line-length = 88
+    target-version = "py311"
+    extend-exclude = []
+
+    [tool.ruff.lint]
+    select = ["E", "F", "I"]
 
 
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-markers = [
-    "network: tests necessitant un acces internet (huggingface.co) ignores par defaut, lancer avec -m network",
-]
+    [tool.pytest.ini_options]
+    testpaths = ["tests"]
+    markers = [
+        "network: tests necessitant un acces internet (huggingface.co) ignores par defaut, lancer avec -m network",
+    ]
+
+
+    # --- A AJOUTER dans ton pyproject.toml, section [tool.uv] ---
+    # Force la version CPU-only de PyTorch -- evite de telecharger le
+    # support CUDA (plusieurs Go inutiles sur un deploiement sans GPU).
+
+    [tool.uv.sources]
+    torch = { index = "pytorch-cpu" }
+
+    [[tool.uv.index]]
+    name = "pytorch-cpu"
+    url = "https://download.pytorch.org/whl/cpu"
+    explicit = true

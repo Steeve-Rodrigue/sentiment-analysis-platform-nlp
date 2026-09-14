@@ -22,7 +22,7 @@ jobs:
         python-version: '3.11'
 
     - name: install dependencies
-      run: uv sync --group dev
+      run: uv sync --group dev --extra ml-phases
 
     - name: Download NLTK data
       run: uv run python scripts/setup_nltk.py
