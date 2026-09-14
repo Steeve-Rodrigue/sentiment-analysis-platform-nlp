@@ -1,7 +1,7 @@
 """
-tests/multilingual/test_translation_based.py
+tests/multilingual/test_translation.py
 
-Tests unitaires pour src/multilingual/translation_based.py.
+Tests unitaires pour src/multilingual/translation.py.
 Necessitent un acces reseau (telechargement des modeles MarianMT et
 DistilBERT) -- marques @pytest.mark.network.
 """

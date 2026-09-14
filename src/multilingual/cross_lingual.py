@@ -25,7 +25,7 @@ NOTE IMPORTANTE (verifiee empiriquement) : ce module necessite un
 acces reseau a huggingface.co pour telecharger XLM-R -- bloque dans
 l'environnement sandbox utilise pour ecrire ce code (meme situation
 que DistilBERT en Phase 6). Reutilise l'infrastructure de
-transformer_arch/fine_tuning.py (SentimentDataset, tokenize_dataset)
+transformers_arch/fine_tuning.py (SentimentDataset, tokenize_dataset)
 plutot que de la dupliquer.
 """
 
