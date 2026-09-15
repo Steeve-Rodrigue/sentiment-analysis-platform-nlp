@@ -16,10 +16,16 @@ type Bubble = {
   x: number;
   y: number;
   r: number;
+  // ECharts (6.x) only reliably positions a scatter point from this
+  // [x, y] tuple -- plain x/y fields on the object plus a series-level
+  // encode/dimensions mapping silently produces zero rendered points
+  // (no error, no canvas even gets created). Verified directly against
+  // the installed echarts build before relying on this.
+  value: [number, number];
 };
 
-const MIN_RADIUS = 14;
-const MAX_RADIUS = 42;
+const MIN_RADIUS = 8;
+const MAX_RADIUS = 16;
 const MAX_BUBBLES_PER_SIDE = 10;
 
 /** Places circles around (centerX, centerY) with a tight spiral
@@ -41,7 +47,7 @@ function packBubbles(
   const placed: { x: number; y: number; r: number }[] = [];
 
   return entries.map(([aspect, count]) => {
-    const r = MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * Math.sqrt(count / maxCount);
+    const r = MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * Math.sqrt(count*count / maxCount);
     let x = centerX;
     let y = centerY;
     let angle = 0;
@@ -50,7 +56,7 @@ function packBubbles(
       const overlaps = placed.some((p) => {
         const dx = p.x - x;
         const dy = p.y - y;
-        return Math.hypot(dx, dy) < p.r + r + 2;
+        return Math.hypot(dx, dy) < p.r + r + 4;
       });
       if (!overlaps) break;
       angle += 0.25;
@@ -59,7 +65,7 @@ function packBubbles(
       y = centerY + radius * Math.sin(angle);
     }
     placed.push({ x, y, r });
-    return { aspect, sentiment, count, x, y, r };
+    return { aspect, sentiment, count, x, y, r, value: [x, y] as [number, number] };
   });
 }
 
@@ -115,31 +121,27 @@ export function LiveAspectBubbles() {
         type: "scatter",
         data: positive,
         symbolSize: (_value: unknown, params: { data: Bubble }) => params.data.r * 2,
-        itemStyle: { color: "#1F7A5C", opacity: 0.85 },
+        itemStyle: { color: "#1F7A5C", opacity: 0.85, borderColor: "#FFFFFF" },
         label: {
           show: true,
           formatter: (p: { data: Bubble }) => p.data.aspect,
-          color: "#fff",
-          fontSize: 11,
+          color: "#020202",
+          fontSize: 8,
           overflow: "truncate",
         },
-        encode: { x: "x", y: "y" },
-        dimensions: ["x", "y"],
       },
       {
         type: "scatter",
         data: negative,
         symbolSize: (_value: unknown, params: { data: Bubble }) => params.data.r * 2,
-        itemStyle: { color: "#D14E38", opacity: 0.85 },
+        itemStyle: { color: "#D14E38", opacity: 0.85, borderColor: "#FFFFFF" },
         label: {
           show: true,
           formatter: (p: { data: Bubble }) => p.data.aspect,
-          color: "#fff",
-          fontSize: 11,
+          color: "#020202",
+          fontSize: 8,
           overflow: "truncate",
         },
-        encode: { x: "x", y: "y" },
-        dimensions: ["x", "y"],
       },
     ],
   };
@@ -152,13 +154,14 @@ export function LiveAspectBubbles() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {hasData ? (
+        <div className="relative">
           <ReactECharts option={option} style={{ height: 280 }} notMerge />
-        ) : (
-          <div className="flex h-[280px] items-center justify-center text-sm text-muted-foreground">
-            Waiting for aspects to show up in incoming reviews&hellip;
-          </div>
-        )}
+          {!hasData && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white text-sm text-muted-foreground">
+              Waiting for aspects to show up in incoming reviews&hellip;
+            </div>
+          )}
+        </div>
         <div className="mt-3 flex items-center justify-center gap-6 text-xs text-[#503535]">
           <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-full bg-[#1F7A5C]" />
