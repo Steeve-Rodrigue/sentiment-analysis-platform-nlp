@@ -32,11 +32,14 @@ export function LiveSentimentChart() {
       type: "category",
       data: messages.map((message) => message.received_at),
       show: false,
+      axisLabel: {
+        interval: 4,
+      },
     },
     yAxis: {
       type: "value",
-      min: -1,
-      max: 1,
+      min: -2,
+      max: 2,
       splitLine: {
       lineStyle: {
         type: 'dashed',
@@ -55,8 +58,8 @@ export function LiveSentimentChart() {
     series: [
       {
         type: "line",
-        smooth: false,
-        lineStyle: { width: 2, color: trendColor },
+        smooth: true,
+        lineStyle: { width: 1.5, color: trendColor },
         data: messages.map((message) => message.overall_score),
       },
     ],
