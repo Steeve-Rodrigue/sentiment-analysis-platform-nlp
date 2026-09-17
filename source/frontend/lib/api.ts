@@ -4,7 +4,7 @@ import type {
   SentimentResponse,
 } from "@/lib/types";
 
-// Server-rendered code (e.g. the /models page) runs inside the
+// Server-rendered code runs inside the
 // frontend container and must reach the backend over the Docker
 // network (API_BASE_URL_INTERNAL=http://backend:8000 in
 // docker-compose.yml). Client code runs in the viewer's browser and
