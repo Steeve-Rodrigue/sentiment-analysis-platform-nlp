@@ -13,7 +13,7 @@ tournent tous les deux en continu, independamment.
 Reutilise load_semeval_absa() (Phase 9) plutot que des phrases
 inventees a la main -- de vrais avis annotes par des humains, plus
 credibles pour une demo. Necessite un acces reseau pour telecharger le
-dataset au premier appel (mis en cache ensuite, voir _load_review_pool).
+dataset au premier appel (mis en cache ensuite, voir load_review_pool).
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ FALLBACK_REVIEWS = [
 _REVIEW_POOL_CACHE: list[str] | None = None
 
 
-def _load_review_pool() -> list[str]:
+def load_review_pool() -> list[str]:
     """Charge (une seule fois, mis en cache) l'ensemble des phrases
     reelles du dataset SemEval ABSA -- train + eval reunis. Un meme
     avis peut apparaitre plusieurs fois dans le dataset brut (une
@@ -84,7 +84,7 @@ async def run_producer_simulator_loop(
 
     # charge le pool AVANT la boucle (telechargement potentiel du
     # dataset ne doit se faire qu'une fois, pas a chaque iteration)
-    pool_avis = await loop.run_in_executor(None, _load_review_pool)
+    pool_avis = await loop.run_in_executor(None, load_review_pool)
 
     review_id = 0
     try:

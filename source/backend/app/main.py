@@ -21,6 +21,10 @@ from app.core.config import settings
 from app.core.model_registry import registry
 from app.routers import analyze, live, sentiment
 from app.services.kafka_service import run_kafka_consumer_loop
+from app.services.local_stream_service import (
+    run_local_consumer_loop,
+    run_producer_simulator_loop_local,
+)
 from app.services.producer_simulator import run_producer_simulator_loop
 
 
@@ -28,18 +32,33 @@ from app.services.producer_simulator import run_producer_simulator_loop
 async def lifespan(app: FastAPI):
     registry.load_all()
 
-    producer_task = asyncio.create_task(
-        run_producer_simulator_loop(
-            settings.kafka_review_topic, settings.kafka_bootstrap_servers
+    # settings.use_kafka picks which pipeline backs the live review
+    # feed -- a real Kafka topic (local docker-compose, or a managed
+    # Kafka in prod) when True, an in-process asyncio.Queue (e.g. on
+    # Render, where no Kafka broker is available/managed) when False.
+    # Same producer -> analyze -> broadcast pipeline either way, see
+    # local_stream_service.py.
+    if settings.use_kafka:
+        producer_task = asyncio.create_task(
+            run_producer_simulator_loop(
+                settings.kafka_review_topic, settings.kafka_bootstrap_servers
+            )
         )
-    )
-    consumer_task = asyncio.create_task(
-        run_kafka_consumer_loop(
-            settings.kafka_review_topic,
-            settings.kafka_bootstrap_servers,
-            registry,
+        consumer_task = asyncio.create_task(
+            run_kafka_consumer_loop(
+                settings.kafka_review_topic,
+                settings.kafka_bootstrap_servers,
+                registry,
+            )
         )
-    )
+    else:
+        review_queue: asyncio.Queue = asyncio.Queue()
+        producer_task = asyncio.create_task(
+            run_producer_simulator_loop_local(review_queue)
+        )
+        consumer_task = asyncio.create_task(
+            run_local_consumer_loop(review_queue, registry)
+        )
 
     yield
 

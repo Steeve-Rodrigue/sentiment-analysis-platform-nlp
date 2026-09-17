@@ -1,39 +1,19 @@
 # docker/docker-compose.yml
 #
-# Kafka SEUL, image OFFICIELLE Apache Kafka (apache/kafka), mode KRaft
-# (pas de Zookeeper). Aucune base de donnees -- le projet n'utilise
-# aucune persistance (choix de conception explicite).
+# Pas de Kafka -- le pipeline producteur/consommateur simule tourne
+# via une asyncio.Queue en memoire (USE_KAFKA=false, le defaut, voir
+# app/core/config.py et app/services/local_stream_service.py). Aucune
+# base de donnees non plus -- le projet n'utilise aucune persistance
+# (choix de conception explicite).
 #
-# NOTE IMPORTANTE : ce fichier utilisait a l'origine bitnami/kafka,
-# mais Bitnami a change sa politique de distribution -- les images
-# versionnees (ex. bitnami/kafka:3.7) sont desormais reservees aux
-# clients payants ("Bitnami Secure Images"). apache/kafka est
-# l'image OFFICIELLE publiee par le projet Apache Kafka lui-meme
-# depuis la version 3.7, gratuite et independante de ce changement.
+# Pour retester/demontrer le vrai chemin Kafka (kafka_service.py /
+# producer_simulator.py / realtime/streaming.py) : repasser
+# USE_KAFKA=true ci-dessous et faire tourner un broker Kafka quelque
+# part (ex. `docker run apache/kafka:3.7.0 ...` en mode KRaft, comme
+# le faisait ce fichier avant -- voir git history) en pointant
+# KAFKA_BOOTSTRAP_SERVERS dessus.
 
 services:
-  kafka:
-    image: apache/kafka:3.7.0
-    container_name: globatrend-kafka
-    ports:
-      - "9092:9092"
-      - "9093:9093"
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    volumes:
-      - kafka_data:/var/lib/kafka/data
-
   backend:
     build:
       context: .
@@ -42,9 +22,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    depends_on:
-      - kafka
+      - USE_KAFKA=false
 
   frontend:
     build:
@@ -64,6 +42,3 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-
-volumes:
-  kafka_data:
