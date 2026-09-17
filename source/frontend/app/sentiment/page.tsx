@@ -1,5 +1,6 @@
 import { Source_Serif_4 } from "next/font/google";
-import { ListTree, Radio, Star } from "lucide-react";
+import Link from "next/link";
+import { ListTree, Radio, Star, ArrowLeft } from "lucide-react";
 
 import { kadwa } from "@/components/ui/Tonecard";
 import { SentimentForm } from "@/components/sentiment-form";
@@ -77,6 +78,14 @@ export default function SentimentPage() {
           <LiveSentimentChart />
           <LiveAspectBubbles />
         </section>
+        <Link
+              href="/"
+              className="inline-flex items-center gap-2  px-8 text-base font-medium text-blue-500 transition-colors "
+            >
+              <ArrowLeft className="size-6" />Landing Page
+
+        </Link>
+
       </div>
     </main>
   );
