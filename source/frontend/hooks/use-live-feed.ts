@@ -6,7 +6,7 @@ import { buildLiveWsUrl } from "@/lib/ws";
 import type { LiveReviewMessage } from "@/lib/types";
 
 const MAX_MESSAGES = 50;
-const RECONNECT_DELAY_MS = 2000;
+const RECONNECT_DELAY_MS = 4000;
 
 export type LiveFeedStatus = "connecting" | "open" | "reconnecting" | "closed";
 
