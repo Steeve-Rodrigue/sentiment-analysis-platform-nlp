@@ -55,14 +55,46 @@ export function LiveSentimentChart() {
         return `${message.text.slice(0, 80)}<br/>score: ${message.overall_score.toFixed(2)}`;
       },
     },
-    series: [
-      {
-        type: "line",
-        smooth: true,
-        lineStyle: { width: 1.5, color: trendColor },
-        data: messages.map((message) => message.overall_score),
+series: [
+  {
+    type: "line",
+    smooth: true,
+    showSymbol: false,
+    lineStyle: {
+      width: 1.5,
+      color: trendColor,
+    },
+    data: messages.map((message) => message.overall_score),
+    areaStyle: {
+      color: {
+        type: "linear",
+        x: 0,
+        y: 0,
+        x2: 0,
+        y2: 1,
+        colorStops: [
+          {
+            offset: 0,
+            color: "#00911f",
+          },
+          {
+            offset: 0.5,
+            color: "#1F7A5C",
+          },
+          {
+            offset: 0.5,
+            color: "#D14E38",
+          },
+          {
+            offset: 1,
+            color: "#D14E38",
+          },
+        ],
       },
-    ],
+      opacity: 0.2,
+    },
+  },
+],
   };
 
   return (
