@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     # Version de l'application
     app_version: str = "1.0.0"
 
-    absa_model_name: str = "distilbert-base-uncased"
+    absa_model_name: str = "Steeve2ml/globatrend-absa-english-classifier"
     # Producteur et consommateur simules tournent tous les deux DANS ce
     # meme processus FastAPI (voir kafka_service.py/producer_simulator.py)
     # -- Kafka ne decouple donc pas deux services distincts ici, juste

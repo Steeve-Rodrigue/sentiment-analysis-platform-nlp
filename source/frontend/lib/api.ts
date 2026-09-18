@@ -13,11 +13,11 @@ function resolveBaseUrl(): string {
   if (typeof window === "undefined") {
     return (
       process.env.API_BASE_URL_INTERNAL ??
-      process.env.NEXT_PUBLIC_API_BASE_URL ??
+      process.env.API_URL??
       "http://localhost:8000"
     );
   }
-  return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+  return process.env.API_URL ?? "http://localhost:8000";
 }
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
