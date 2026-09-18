@@ -67,8 +67,7 @@ def translate_to_english(text: str, source_lang: str) -> str:
     dependance fragile au nom exact de la tache."""
     if source_lang not in TRANSLATION_MODELS:
         raise ValueError(
-            f"Langue '{source_lang}' non supportee. "
-            f"Choix : {list(TRANSLATION_MODELS)}"
+            f"Langue '{source_lang}' non supportee. Choix : {list(TRANSLATION_MODELS)}"
         )
 
     if source_lang not in _TRANSLATOR_CACHE:

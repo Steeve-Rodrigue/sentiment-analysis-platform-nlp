@@ -135,8 +135,7 @@ def load_semeval_absa(
                 f"{raisons_rejet}"
             )
             print(
-                f"  Valeurs brutes de label/polarity rencontrees : "
-                f"{labels_bruts_vus}"
+                f"  Valeurs brutes de label/polarity rencontrees : {labels_bruts_vus}"
             )
             print(f"  Exemple de ligne brute : {ds[0]}")
 
@@ -293,8 +292,8 @@ MULTILINGUAL_ABSA_TEST_SETS: dict[str, list[tuple[str, str, int]]] = {
         ("Le service client etait tres aimable et rapide", "service client", 2),
     ],
     "hi": [
-        ("डिलीवरी " "धीमी थी " "लेकिन " "उत्पाद " "उत्कृष्ट है", "डिलीवरी", 0),
-        ("डिलीवरी " "धीमी थी " "लेकिन " "उत्पाद " "उत्कृष्ट है", "उत्पाद", 2),
+        ("डिलीवरी धीमी थी लेकिन उत्पाद उत्कृष्ट है", "डिलीवरी", 0),
+        ("डिलीवरी धीमी थी लेकिन उत्पाद उत्कृष्ट है", "उत्पाद", 2),
     ],
 }
 

@@ -56,9 +56,7 @@ def load_review_pool() -> list[str]:
         (train_texts, _, _, eval_texts, _, _) = load_semeval_absa()
         tous_les_textes = train_texts + eval_texts
         _REVIEW_POOL_CACHE = list(dict.fromkeys(tous_les_textes))
-        print(
-            f"Pool d'avis SemEval charge : " f"{len(_REVIEW_POOL_CACHE)} avis uniques"
-        )
+        print(f"Pool d'avis SemEval charge : {len(_REVIEW_POOL_CACHE)} avis uniques")
     except Exception as e:
         print(
             f"Echec du chargement de SemEval ({e}), "
