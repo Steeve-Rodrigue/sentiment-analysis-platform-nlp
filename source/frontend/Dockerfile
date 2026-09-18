@@ -17,7 +17,7 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY source/frontend/ ./
-ENV NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+ENV API_BASE_URL=http://localhost:5000
 RUN pnpm build
 
 FROM base AS runner

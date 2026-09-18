@@ -14,10 +14,10 @@ function resolveBaseUrl(): string {
     return (
       process.env.API_BASE_URL_INTERNAL ??
       process.env.API_URL??
-      "http://localhost:8000"
+      "http://localhost:5000"
     );
   }
-  return process.env.API_URL ?? "http://localhost:8000";
+  return process.env.API_URL ?? "http://localhost:5000";
 }
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
