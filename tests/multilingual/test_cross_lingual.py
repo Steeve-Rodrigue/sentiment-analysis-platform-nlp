@@ -58,7 +58,7 @@ def test_zero_shot_transfer_returns_valid_metrics():
     import sys as _sys
 
     _sys.path.insert(0, "src")
-    from classical_ml.dataset_loader import load_movie_reviews
+    from classical_ml.data_loader import load_movie_reviews
     from multilingual.cross_lingual import (
         evaluate_zero_shot,
         fine_tune_on_source_language,
