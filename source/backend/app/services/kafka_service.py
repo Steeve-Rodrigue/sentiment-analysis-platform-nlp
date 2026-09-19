@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from app.core.model_registry import ModelRegistry
 from app.schemas.analyze import AspectSentiment
 from app.schemas.live import LiveReviewMessage
+from app.services.absa_service import predict_aspects_with_confidence
 from app.services.broadcast import broadcaster
 
 _SENTIMENT_SIGN = {"positive": 1.0, "neutral": 0.0, "negative": -1.0}
@@ -50,10 +51,7 @@ async def run_kafka_consumer_loop(
 ) -> None:
     """Boucle infinie : consomme Kafka, analyse, diffuse. Demarree
     une seule fois au lancement du serveur (lifespan de main.py)."""
-    from aspect_sentiment.absa import (
-        extract_aspect_candidates,
-        predict_aspect_sentiment_with_confidence,
-    )
+    from aspect_sentiment.absa import extract_aspect_candidates
     from realtime.streaming import create_consumer
 
     loop = asyncio.get_event_loop()
@@ -71,11 +69,10 @@ async def run_kafka_consumer_loop(
             )
             sentiments = await loop.run_in_executor(
                 None,
-                predict_aspect_sentiment_with_confidence,
+                predict_aspects_with_confidence,
                 review["text"],
                 aspects,
-                registry.absa_model,
-                registry.absa_tokenizer,
+                registry,
             )
             aspect_sentiments = [
                 AspectSentiment(aspect=a, sentiment=label)

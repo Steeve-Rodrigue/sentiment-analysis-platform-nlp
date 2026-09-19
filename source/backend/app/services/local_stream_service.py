@@ -27,6 +27,7 @@ from datetime import datetime, timezone
 from app.core.model_registry import ModelRegistry
 from app.schemas.analyze import AspectSentiment
 from app.schemas.live import LiveReviewMessage
+from app.services.absa_service import predict_aspects_with_confidence
 from app.services.broadcast import broadcaster
 from app.services.kafka_service import compute_overall_score
 from app.services.producer_simulator import load_review_pool
@@ -59,10 +60,7 @@ async def run_local_consumer_loop(
     """Equivalent sans Kafka de run_kafka_consumer_loop() -- lit les
     avis depuis la queue en memoire au lieu d'un topic Kafka, exactement
     la meme logique d'analyse et de diffusion ensuite."""
-    from aspect_sentiment.absa import (
-        extract_aspect_candidates,
-        predict_aspect_sentiment_with_confidence,
-    )
+    from aspect_sentiment.absa import extract_aspect_candidates
 
     loop = asyncio.get_event_loop()
     while True:
@@ -73,11 +71,10 @@ async def run_local_consumer_loop(
         )
         sentiments = await loop.run_in_executor(
             None,
-            predict_aspect_sentiment_with_confidence,
+            predict_aspects_with_confidence,
             review["text"],
             aspects,
-            registry.absa_model,
-            registry.absa_tokenizer,
+            registry,
         )
         aspect_sentiments = [
             AspectSentiment(aspect=a, sentiment=label)
