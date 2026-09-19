@@ -86,7 +86,7 @@ export function SentimentForm() {
             <span className="text-muted-foreground text-[11px] px-1 sm:text-[14px]">Confidence:
               {result.confidence.toFixed(2)}
             </span>
-            <span className="text-muted-foreground  text-[11px] px-3 sm:text-[14px]"> Time:
+            <span className="text-muted-foreground  text-[11px] px-2 sm:text-[14px]"> Time:
               {(result.processing_time_ms/1000).toFixed(2)} s
             </span>
           </div>
