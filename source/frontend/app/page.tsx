@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "cn";
-import ToneCard, { kadwa, type ToneCardProps } from "@/components/ui/Tonecard";
+import ToneCard, { stixTwoText, type ToneCardProps } from "@/components/ui/Tonecard";
 
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
@@ -23,7 +23,7 @@ const FEATURES: Omit<ToneCardProps, "className">[] = [
     title: "Read the overall tone",
     headerImage: "/phone.jpg",
     body: (
-      <p className={cn(kadwa.className, "text-center text-3xs text-[#503535]")}>
+      <p className={cn(stixTwoText.className, "text-center text-3xs text-[#503535]")}>
         &ldquo;The new UI is incredibly intuitive and the performance is
         lightning fast. I&apos;ve never been happier with a software update.
         It&apos;s a total game-changer for my workflow.&rdquo;
@@ -44,7 +44,7 @@ const FEATURES: Omit<ToneCardProps, "className">[] = [
     headerImage: "/img2.jpg",
     body: (
       <div className="flex w-full flex-col gap-3">
-        <p className={cn(kadwa.className, "text-center text-3xs text-[#503535]")}>
+        <p className={cn(stixTwoText.className, "text-center text-3xs text-[#503535]")}>
           &ldquo;Delivery took way longer than promised, but the customer
           service team was fantastic and the product quality itself is
           top.&rdquo;
@@ -66,7 +66,7 @@ const FEATURES: Omit<ToneCardProps, "className">[] = [
       </div>
     ),
     stats: [
-      { icon: ThumbsUp, label: "3 Positive" },
+      { icon: ThumbsUp, label: "2 Positive" },
       { icon: ThumbsDown, label: "1 Negative" },
     ],
   },
@@ -74,35 +74,26 @@ const FEATURES: Omit<ToneCardProps, "className">[] = [
     title: "Watch it happen live",
     headerImage: "/img3.jpeg",
     body: (
-      <div className="flex w-full flex-col gap-2">
-        <div className="flex items-center gap-2 text-3xs">
-          <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-[#2f6b52]" />
-          <span className={cn(kadwa.className, "text-[#503535]")}>
-            &ldquo;Refund process was quick and painless&rdquo;
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-3xs">
-          <span className="h-2 w-2 shrink-0 rounded-full bg-[#a63d2f]" />
-          <span className={cn(kadwa.className, "text-[#503535]")}>
-            &ldquo;Support took too long to respond&rdquo;
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-3xs">
-          <span className="h-2 w-2 shrink-0 rounded-full bg-[#2f6b52]" />
-          <span className={cn(kadwa.className, "text-[#503535]")}>
-            &ldquo;Packaging was excellent this time&rdquo;
-          </span>
+      <div className="flex w-full flex-col gap-3">
+        <p className={cn(stixTwoText.className, "text-center text-3xs text-[#503535]")}>
+          Real reviews stream in continuously: the overall sentiment trend
+          line updates over time, alongside a live, sentiment-colored
+          bubble chart  one bubble per aspect, sized by how often it
+          comes up.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
+          <span className="text-base font-semibold text-[#D14E38]">Delivery</span>
+          <span className="text-xs font-medium text-[#1F7A5C]">Service</span>
+          <span className="text-sm font-medium text-[#1F7A5C]">Quality</span>
+          <span className="text-[10px] text-[#D14E38]">Price</span>
+          <span className="text-xs font-medium text-[#1F7A5C]">Packaging</span>
+          <span className="text-[10px] text-[#D14E38]">Refund</span>
         </div>
       </div>
     ),
-    tag: {
-      icon: Radio,
-      label: "Streaming Live",
-      className: "text-[#2f6b52]",
-    },
     stats: [
       { icon: Radio, label: "Live" },
-      { icon: Clock, label: "Updates every 2s" },
+      { icon: Clock, label: "Updates frequently" },
     ],
   },
 ];
@@ -133,8 +124,8 @@ export default function LandingPage() {
             </Link>
           </div>
           <p className="max-w-xl text-lg text-muted-foreground">
-            A multilingual, aspect-based sentiment analysis platform that
-            reads reviews the way a person would  as a whole, and
+            An aspect-based sentiment analysis platform that
+            reads reviews in english  the way a person would  as a whole, and
             piece by piece.
           </p>
 
