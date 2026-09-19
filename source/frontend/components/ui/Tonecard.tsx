@@ -1,11 +1,11 @@
 import * as React from "react"
 import Image from "next/image"
-import { Kadwa } from "next/font/google"
+import { STIX_Two_Text } from "next/font/google"
 import { type LucideIcon } from "lucide-react"
 import { cn } from "cn"
 import { Card, CardHeader, CardTitle, CardContent } from "./card"
 
-export const kadwa = Kadwa({ subsets: ["latin"], weight: ["400", "700"] })
+export const stixTwoText = STIX_Two_Text({ subsets: ["latin"], weight: ["400", "700"] })
 
 export type ToneCardStat = {
   icon: LucideIcon
@@ -82,11 +82,11 @@ export function ToneCard({
       </div>
       <CardHeader className="grid-rows-[auto_1fr] gap-5 px-6 pt-6 sm:px-4 flex-1">
         <CardTitle
-          className={cn(kadwa.className, "text-[1.4rem] text-[#260000] text-center")}
+          className={cn(stixTwoText.className, "text-[1.4rem] text-[#260000] text-center")}
         >
           {title}
         </CardTitle>
-        <div className="flex h-full flex-col justify-between gap-2 px-6 sm:px-14">
+        <div className="flex h-full flex-col justify-between gap-2 px-6 text-[15px] sm:text-[17px] sm:px-14">
           {body}
           {tag && <Tag {...tag} />}
         </div>

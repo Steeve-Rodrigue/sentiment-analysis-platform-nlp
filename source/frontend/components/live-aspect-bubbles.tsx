@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useLiveFeed } from "@/hooks/use-live-feed";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { kadwa } from "@/components/ui/Tonecard";
+import { stixTwoText } from "@/components/ui/Tonecard";
 
 type Sentiment = "positive" | "negative";
 
@@ -263,7 +263,7 @@ export function LiveAspectBubbles() {
   return (
     <Card className="rounded-[24px] shadow-[0_8px_16px_0_rgba(140,16,16,0.1)] ring-0 transition-shadow duration-300 hover:shadow-[0_12px_28px_0_rgba(140,16,16,0.15)]">
       <CardHeader>
-        <CardTitle className={`${kadwa.className} text-lg text-[#260000]`}>
+        <CardTitle className={`${stixTwoText.className} text-lg text-[#260000]`}>
           Aspects in the wild
         </CardTitle>
       </CardHeader>

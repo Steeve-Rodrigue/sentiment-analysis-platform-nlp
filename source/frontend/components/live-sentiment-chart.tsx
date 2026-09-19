@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { kadwa } from "@/components/ui/Tonecard";
+import { stixTwoText } from "@/components/ui/Tonecard";
 
 const STATUS_LABEL: Record<string, string> = {
   connecting: "Connecting...",
@@ -101,7 +101,7 @@ series: [
     <Card className="rounded-[24px] shadow-[0_8px_16px_0_rgba(140,16,16,0.1)] ring-0 transition-shadow duration-300 hover:shadow-[0_12px_28px_0_rgba(15,35,134,0.15)]">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className={`${kadwa.className} text-lg text-[#260000]`}>
+          <CardTitle className={`${stixTwoText.className} text-lg text-[#260000]`}>
             Live review stream
           </CardTitle>
         </div>
