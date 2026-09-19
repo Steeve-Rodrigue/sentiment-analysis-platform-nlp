@@ -1,0 +1,34 @@
+# source/backend/pyproject.runtime.toml
+#
+# pyproject.toml SEPARE, specifique a l'image Docker FINALE -- ne
+# contient QUE ce qui est necessaire au RUNTIME (charger un modele
+# ONNX deja exporte et servir des requetes FastAPI), pas torch, pas
+# les outils d'entrainement des phases precedentes.
+
+[project]
+name = "globatrend-backend-runtime"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.52.4",
+    "pydantic-settings>=2.15.0",
+    "onnxruntime>=1.20.0",
+    "transformers>=5.14.1",
+    "kafka-python>=3.0.11",
+    "nltk>=3.10.0",
+]
+# NOTE : PAS de "optimum" ici -- verifie empiriquement que le paquet
+# `optimum` (meme sans extra) declare `torch` comme dependance
+# INCONDITIONNELLE (voir uv.lock d'une version anterieure de ce
+# fichier), ce qui aurait reintroduit torch + un stack CUDA complet
+# dans l'image finale. Les modeles ONNX sont donc charges directement
+# via `onnxruntime.InferenceSession` (app/core/model_registry.py), pas
+# via optimum.onnxruntime.ORTModelForSequenceClassification.
+#
+# "transformers" reste liste ici (pour AutoTokenizer/AutoConfig et
+# extract_aspect_candidates via nltk, Phase 9) mais SANS l'extra
+# [torch] -- verifie que ton gestionnaire de paquets n'installe pas
+# torch comme dependance transitive malgre tout (transformers peut
+# parfois le tirer selon la version -- verifie avec
+# `uv pip list | grep torch` apres uv sync, doit etre VIDE).
