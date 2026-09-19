@@ -10,20 +10,24 @@ Demarre comme tache de fond au lancement du serveur (main.py),
 exactement comme le consommateur -- producteur et consommateur
 tournent tous les deux en continu, independamment.
 
-Reutilise load_semeval_absa() (Phase 9) plutot que des phrases
-inventees a la main -- de vrais avis annotes par des humains, plus
-credibles pour une demo. Necessite un acces reseau pour telecharger le
-dataset au premier appel (mis en cache ensuite, voir load_review_pool).
-"""
+Le pool d'avis (de vrais avis SemEval, plus credibles pour une demo
+qu'un jeu de phrases inventees) est PRE-TELECHARGE AU BUILD de l'image
+Docker (voir prefetch_review_pool.py) et lu ici depuis un JSON
+statique -- ni `datasets` ni `scikit-learn` (necessaires a
+load_semeval_absa()) ne sont installes au runtime (image finale
+torch-free, meme raison que model_registry.py), et le runtime n'a plus
+besoin d'acces reseau a huggingface.co pour ce pool."""
 
 from __future__ import annotations
 
 import asyncio
+import json
 import random
+from pathlib import Path
 
-# Repli en cas d'echec du chargement du dataset (ex. pas de reseau au
-# demarrage du serveur) -- garantit que le simulateur fonctionne quand
-# meme, avec un choix de phrases plus restreint.
+# Repli si le prefetch au build n'a pas eu lieu (ex. dev local sans
+# avoir lance prefetch_review_pool.py) -- garantit que le simulateur
+# fonctionne quand meme, avec un choix de phrases plus restreint.
 FALLBACK_REVIEWS = [
     "The delivery was super fast, arrived the next day",
     "Product quality is outstanding, highly recommend it",
@@ -37,29 +41,31 @@ FALLBACK_REVIEWS = [
     "Absolutely love this purchase, exceeded my expectations",
 ]
 
+# Chemin ABSOLU, resolu par rapport a ce fichier -- pas relatif au
+# repertoire de travail du processus (meme raison que ONNX_MODELS_DIR
+# dans model_registry.py : le cwd du conteneur ne correspond pas a
+# source/backend/, --app-dir change seulement sys.path). Ce fichier
+# vit dans app/services/, review_pool.json a la racine de
+# source/backend/ -- deux niveaux plus haut.
+REVIEW_POOL_PATH = Path(__file__).resolve().parents[2] / "review_pool.json"
+
 _REVIEW_POOL_CACHE: list[str] | None = None
 
 
 def load_review_pool() -> list[str]:
-    """Charge (une seule fois, mis en cache) l'ensemble des phrases
-    reelles du dataset SemEval ABSA -- train + eval reunis. Un meme
-    avis peut apparaitre plusieurs fois dans le dataset brut (une
-    ligne par aspect detecte dans cet avis) -- dict.fromkeys()
-    deduplique tout en preservant l'ordre d'apparition."""
+    """Charge (une seule fois, mis en cache) le pool d'avis SemEval
+    pre-telecharge au build (voir prefetch_review_pool.py)."""
     global _REVIEW_POOL_CACHE
     if _REVIEW_POOL_CACHE is not None:
         return _REVIEW_POOL_CACHE
 
     try:
-        from aspect_sentiment.absa import load_semeval_absa
-
-        (train_texts, _, _, eval_texts, _, _) = load_semeval_absa()
-        tous_les_textes = train_texts + eval_texts
-        _REVIEW_POOL_CACHE = list(dict.fromkeys(tous_les_textes))
+        with open(REVIEW_POOL_PATH, encoding="utf-8") as f:
+            _REVIEW_POOL_CACHE = json.load(f)
         print(f"Pool d'avis SemEval charge : {len(_REVIEW_POOL_CACHE)} avis uniques")
-    except Exception as e:
+    except (OSError, json.JSONDecodeError) as e:
         print(
-            f"Echec du chargement de SemEval ({e}), "
+            f"Echec du chargement de {REVIEW_POOL_PATH} ({e}), "
             f"repli sur {len(FALLBACK_REVIEWS)} avis fixes"
         )
         _REVIEW_POOL_CACHE = FALLBACK_REVIEWS
