@@ -1,36 +1,43 @@
 """
-source/backend/app/services/sentiment_service.py
+app/services/sentiment_service.py
 
-Logique pour POST /api/sentiment -- sentiment GLOBAL (pas par
-aspect), reutilise DIRECTEMENT le modele DistilBERT fine-tune en
-Phase 6. Aucune nouvelle logique de classification.
+Logique pour POST /api/sentiment -- utilise maintenant le modele ONNX
+quantifie (ModelRegistry), avec des tenseurs NumPy plutot que
+PyTorch. VERIFIE EMPIRIQUEMENT : return_tensors="np" fait revenir les
+logits en numpy.ndarray, pas torch.Tensor -- torch n'est plus du tout
+importe dans ce fichier, ni necessaire dans l'image finale au runtime.
 """
 
 from __future__ import annotations
 
 import time
 
-import torch
+import numpy as np
 
 from app.core.model_registry import ModelRegistry
 from app.schemas.sentiment import SentimentResponse
 
 
+def _softmax(logits: np.ndarray) -> np.ndarray:
+    e = np.exp(logits - np.max(logits, axis=-1, keepdims=True))
+    return e / np.sum(e, axis=-1, keepdims=True)
+
+
 def analyze_sentiment(text: str, registry: ModelRegistry) -> SentimentResponse:
-    """Classifie le sentiment global d'un avis (positive/negative),
-    exactement le modele et la logique construits/verifies en
-    Phase 6."""
+    """Classifie le sentiment global d'un avis (positive/negative)."""
     start = time.perf_counter()
 
     inputs = registry.sentiment_tokenizer(
-        text, return_tensors="pt", truncation=True, max_length=512
+        text, return_tensors="np", truncation=True, max_length=512
     )
-    with torch.no_grad():
-        logits = registry.sentiment_model(**inputs).logits
-    probabilities = torch.softmax(logits, dim=-1)
-    predicted_class = torch.argmax(logits, dim=-1).item()
-    label = registry.sentiment_model.config.id2label[predicted_class]
-    confidence = probabilities[0, predicted_class].item()
+    onnx_inputs = {
+        k: v for k, v in inputs.items() if k in registry.sentiment_input_names
+    }
+    (logits,) = registry.sentiment_session.run(None, onnx_inputs)
+    probabilities = _softmax(logits)
+    predicted_class = int(np.argmax(logits, axis=-1)[0])
+    label = registry.sentiment_config.id2label[predicted_class]
+    confidence = float(probabilities[0, predicted_class])
 
     elapsed_ms = (time.perf_counter() - start) * 1000
     return SentimentResponse(
