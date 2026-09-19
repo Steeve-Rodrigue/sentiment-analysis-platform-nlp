@@ -1,20 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { ExternalLink } from "lucide-react";
 
 import { postSentiment } from "@/lib/api";
 import type { SentimentResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { SentimentBadge } from "@/components/sentiment-badge";
-import { kadwa } from "@/components/ui/Tonecard";
+import { stixTwoText } from "@/components/ui/Tonecard";
+
+// Model actually loaded by the backend for /api/sentiment (see
+// model_registry.py::load_all -- sentiment_repo).
+const SENTIMENT_MODEL_URL =
+  "https://huggingface.co/Steeve2ml/globatrend-sentiment-distilbert";
 
 export function SentimentForm() {
   const [text, setText] = useState("");
@@ -39,9 +45,20 @@ export function SentimentForm() {
   return (
     <Card className="rounded-[24px] shadow-[0_8px_16px_0_rgba(140,16,16,0.1)] ring-0 transition-shadow duration-300 hover:shadow-[0_12px_28px_0_rgba(16,64,185,0.15)]">
       <CardHeader>
-        <CardTitle className={`${kadwa.className} text-[14] text-[#260000]`}>
+        <CardTitle className={`${stixTwoText.className} text-[14] text-[#260000]`}>
           Global sentiment
         </CardTitle>
+        <CardAction>
+          <a
+            href={SENTIMENT_MODEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs text-[#1040b9] hover:underline"
+          >
+            See my model
+            <ExternalLink className="size-3" />
+          </a>
+        </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 ">
@@ -66,8 +83,11 @@ export function SentimentForm() {
         {result && (
           <div className="flex items-center gap-2 text-sm">
             <SentimentBadge sentiment={result.sentiment} />
-            <span className="text-muted-foreground">
-              {result.processing_time_ms.toFixed(1)} ms
+            <span className="text-muted-foreground text-[11px] px-1 sm:text-[14px]">Confidence:
+              {result.confidence.toFixed(2)}
+            </span>
+            <span className="text-muted-foreground  text-[11px] px-3 sm:text-[14px]"> Time:
+              {(result.processing_time_ms/1000).toFixed(2)} s
             </span>
           </div>
         )}
