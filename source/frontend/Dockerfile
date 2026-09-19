@@ -17,11 +17,15 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY source/frontend/ ./
-ENV API_BASE_URL=http://localhost:5000
+ENV API_BASE_URL=http://localhost:8000
 RUN pnpm build
 
 FROM base AS runner
 ENV NODE_ENV=production
+# server.js (standalone output) binds to "localhost" by default --
+# unreachable from outside the container despite the port mapping.
+# Must listen on all interfaces for Docker's network to reach it.
+ENV HOSTNAME="0.0.0.0"
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
