@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { ExternalLink } from "lucide-react";
 
 import { postAnalyzeAspects } from "@/lib/api";
 import type { AnalyzeResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardAction,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -24,7 +25,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SentimentBadge } from "@/components/sentiment-badge";
-import { kadwa } from "@/components/ui/Tonecard";
+import { stixTwoText } from "@/components/ui/Tonecard";
+
+const ABSA_MODEL_URL =
+  "https://huggingface.co/Steeve2ml/globatrend-absa-english-classifier";
 
 export function AspectForm() {
   const [text, setText] = useState("");
@@ -56,19 +60,30 @@ export function AspectForm() {
   return (
     <Card className="rounded-[24px] shadow-[0_8px_16px_0_rgba(140,16,16,0.1)] ring-0 transition-shadow duration-300 hover:shadow-[0_12px_28px_0_rgba(209,78,56,0.15)]">
       <CardHeader>
-        <CardTitle className={`${kadwa.className} text-[14] text-[#260000]`}>
+        <CardTitle className={`${stixTwoText.className} text-[14] text-[#260000]`}>
           Aspect-based sentiment
         </CardTitle>
+        <CardAction>
+          <a
+            href={ABSA_MODEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-xs text-[#1040b9] hover:underline"
+          >
+            See my model
+            <ExternalLink className="size-2" />
+          </a>
+        </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="rounded-lg bg-[#f2f0f0] p-3 text-[10px] text-[#503535] sm:text-xs">
           <p className="font-medium text-[#260000] ">Example</p>
-          <p className="mt-1 italic">
+          <p className="mt-1">
             &ldquo;The delivery was late, but the support team was great and
             the price was fair.&rdquo;
           </p>
           <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-            <span>
+            <span className="pl-4">
               delivery: <span className="font-medium text-[#D14E38]">negative</span>
             </span>
             <span>
@@ -100,26 +115,32 @@ export function AspectForm() {
         </form>
         {error && <p className="text-sm text-destructive">{error}</p>}
         {result && (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Aspect</TableHead>
-                <TableHead>Sentiment</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {result.aspects.map((item) => (
-                <TableRow key={item.aspect}>
-                  <TableCell>{item.aspect}</TableCell>
-                  <TableCell>
-                    <SentimentBadge sentiment={item.sentiment} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
+  <>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Aspect</TableHead>
+          <TableHead>Sentiment</TableHead>
+        </TableRow>
+      </TableHeader>
+
+      <TableBody>
+        {result.aspects.map((item) => (
+          <TableRow key={item.aspect}>
+            <TableCell>{item.aspect}</TableCell>
+            <TableCell>
+              <SentimentBadge sentiment={item.sentiment} />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+
+    <span className="text-muted-foreground text-[11px] sm:text-[14px] px-2">
+      Confidence: {result.confidence.toFixed(2)}
+    </span>
+  </>
+)}</CardContent>
     </Card>
   );
 }
