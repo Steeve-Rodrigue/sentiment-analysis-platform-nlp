@@ -224,3 +224,11 @@ notebooks/distilbert-sentiment/
 
 roadmap.md
 .claude
+
+# Modeles ONNX exportes/quantifies au build Docker (export_and_quantize_models.py)
+# -- jamais commits, regeneres a chaque build de source/backend/Dockerfile.
+onnx_models/
+
+# Pool d'avis SemEval pre-telecharge au build Docker
+# (prefetch_review_pool.py) -- meme raison que onnx_models/.
+source/backend/review_pool.json
