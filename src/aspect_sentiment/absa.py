@@ -33,11 +33,6 @@ utilise pour ecrire ce code.
 
 from __future__ import annotations
 
-from transformers_arch.fine_tuning import (
-    evaluate_fine_tuned_model,
-    fine_tune_model,
-)
-
 ASPECT_CATEGORIES = [
     "price",
     "delivery",
@@ -303,7 +298,15 @@ def evaluate_multilingual_zero_shot(trainer, tokenizer) -> dict:
     zero-shot sur les jeux de test multilingues traduits a la main --
     reutilise evaluate_fine_tuned_model() de la Phase 6, avec un
     eval_dataset different par langue a chaque appel. Retourne
-    {code_langue: {accuracy, f1}}."""
+    {code_langue: {accuracy, f1}}.
+
+    Import LOCAL (pas au niveau du module) : transformers_arch.fine_tuning
+    importe Trainer/TrainingArguments de `transformers`, qui necessitent
+    torch -- ce module doit rester importable sans torch pour
+    extract_aspect_candidates() (utilisee au runtime, sans torch, par
+    l'API)."""
+    from transformers_arch.fine_tuning import evaluate_fine_tuned_model
+
     results = {}
     for lang, triples in MULTILINGUAL_ABSA_TEST_SETS.items():
         texts = [t for t, a, lab in triples]
@@ -454,7 +457,13 @@ def train_absa_model(
 ):
     """Fine-tune le modele ABSA sur des paires (texte, aspect, label).
     Reutilise fine_tune_model() de la Phase 6 -- seule la tokenisation
-    en paire change par rapport a un fine-tuning de sentiment global."""
+    en paire change par rapport a un fine-tuning de sentiment global.
+
+    Import LOCAL : voir evaluate_multilingual_zero_shot() ci-dessus,
+    meme raison (torch ne doit pas etre requis pour importer ce
+    module)."""
+    from transformers_arch.fine_tuning import fine_tune_model
+
     train_encodings = tokenize_aspect_pairs(train_texts, train_aspects, tokenizer)
     eval_encodings = tokenize_aspect_pairs(eval_texts, eval_aspects, tokenizer)
 
