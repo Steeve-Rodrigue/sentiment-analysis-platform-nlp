@@ -12,6 +12,7 @@ import {
 
 import { cn } from "cn";
 import ToneCard, { stixTwoText, type ToneCardProps } from "@/components/ui/Tonecard";
+import { BackendWarmup } from "@/components/backend-warmup";
 
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
@@ -101,6 +102,7 @@ const FEATURES: Omit<ToneCardProps, "className">[] = [
 export default function LandingPage() {
   return (
     <main className="flex flex-col">
+      <BackendWarmup />
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-x-0 -top-32 flex justify-center">
           <div className="h-80 w-80 rounded-full bg-[blue]/15 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
