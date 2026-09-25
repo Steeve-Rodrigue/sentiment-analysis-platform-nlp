@@ -84,7 +84,7 @@ export function SentimentForm() {
           <div className="flex items-center gap-2 text-sm">
             <SentimentBadge sentiment={result.sentiment} />
             <span className="text-muted-foreground text-[11px] px-1 sm:text-[14px]">Confidence:
-              {result.confidence.toFixed(2)}
+              {(result.confidence*100).toFixed(2)} %
             </span>
             <span className="text-muted-foreground  text-[11px] px-2 sm:text-[14px]"> Time:
               {(result.processing_time_ms/1000).toFixed(2)} s
