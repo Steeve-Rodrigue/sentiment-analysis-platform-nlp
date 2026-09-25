@@ -136,8 +136,8 @@ export function AspectForm() {
       </TableBody>
     </Table>
 
-    <span className="text-muted-foreground text-[11px] sm:text-[14px] px-2">
-      Confidence: {result.confidence.toFixed(2)}
+    <span className="text-muted-foreground text-[10px] sm:text-[14px] px-2">
+      Confidence: {(result.confidence*100).toFixed(2)} %
     </span>
   </>
 )}</CardContent>
